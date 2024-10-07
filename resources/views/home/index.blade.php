@@ -56,6 +56,9 @@
                         </li>
                     </ul>
                 </div>
+                <div class="footer text-center py-4 mt-auto">
+                    <p class="text-muted">&copy; 2024 Siswa SMKN 13 Bandung. All rights reserved.</p>
+                </div>
             </div>
         </div>
     </div>

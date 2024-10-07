@@ -1,3 +1,6 @@
+
+
+
 <div>
 
     @if ($holiday)
@@ -5,6 +8,17 @@
         <small class="fw-bold">Hari ini adalah hari libur.</small>
     </div>
     @else
+
+    @if (!$canAttend)
+    <div class="alert alert-danger" role="alert">
+        Anda tidak dapat melakukan absensi masuk dari lokasi ini.
+    </div>
+@else
+    <!-- Form Absensi Masuk -->
+    <form wire:submit.prevent="submit">
+        <!-- Isi form di sini -->
+    </form>
+@endif
 
     {{-- jika tidak menggunakan qrcode (button) dan karyawan saat ini tidak menekan tombol izin --}}
     @if (!$attendance->data->is_using_qrcode && !$data['is_there_permission'])
