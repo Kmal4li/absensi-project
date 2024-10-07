@@ -43,6 +43,12 @@
                             <span class="fw-bold d-block">No. Telp : </span>
                             <a href="tel:{{ auth()->user()->phone }}">{{ auth()->user()->phone }}</a>
                         </li>
+
+                        <li class="mb-1">
+                            <span class="fw-bold d-block">Lokasi : </span>
+                            <span id="geo-location"></span>
+                        </li>
+
                         <li class="mb-1">
                             <span class="fw-bold d-block">Bergabung Pada : </span>
                             <span>{{ auth()->user()->created_at->diffForHumans() }} ({{
@@ -54,4 +60,29 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Mengecek apakah geolocation tersedia di browser
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            // Ambil latitude dan longitude
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+
+            // Tampilkan data lokasi di elemen dengan ID 'geo-location'
+            document.getElementById('geo-location').innerHTML = 
+                'Latitude: ' + latitude + ', Longitude: ' + longitude;
+
+            // Anda bisa mengirimkan data ini ke server jika diperlukan
+            // Misalnya dengan AJAX atau dengan mengirimkan form
+        }, function(error) {
+            document.getElementById('geo-location').innerHTML = 
+                'Gagal mendapatkan lokasi: ' + error.message;
+        });
+    } else {
+        document.getElementById('geo-location').innerHTML = 
+            'Geolocation tidak tersedia di browser ini.';
+    }
+</script>
+
 @endsection
