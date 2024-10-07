@@ -11,7 +11,7 @@
 
             <h1 class="fs-2">{{ $attendance->title }}</h1>
             <p class="text-muted">{{ $attendance->description }}</p>
-
+            
             <div class="mb-4">
                 <span class="badge text-bg-light border shadow-sm">Masuk : {{
                     substr($attendance->data->start_time, 0 , -3) }} - {{
