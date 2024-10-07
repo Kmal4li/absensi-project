@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-<div>
-    <div class="row">
+<div class="d-flex flex-column min-vh-100">
+    <div class="row flex-grow-1">
         <div class="col-md-3">
             <div class="card shadow">
                 <div class="card-body">
@@ -19,6 +19,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="footer text-center py-4 mt-auto">
+        <p class="text-muted">&copy; 2024 Siswa SMKN 13 Bandung. All rights reserved.</p>
     </div>
 </div>
 @endsection
