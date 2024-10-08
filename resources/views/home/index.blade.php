@@ -24,6 +24,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-md-4">
             <div class="card shadow-sm">
                 <div class="card-header">
@@ -56,14 +57,13 @@
                         </li>
                     </ul>
                 </div>
-                <div class="footer text-center py-4 mt-auto">
-                    <p class="text-muted">&copy; 2024 Siswa SMKN 13 Bandung. All rights reserved.</p>
-                </div>
             </div>
         </div>
     </div>
 </div>
-
+<div class="footer text-center py-4 mt-auto">
+    <p class="text-muted">&copy; 2024 Siswa SMKN 13 Bandung. All rights reserved.</p>
+</div>
 <script>
     // Mengecek apakah geolocation tersedia di browser
     if ("geolocation" in navigator) {
