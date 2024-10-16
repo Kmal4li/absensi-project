@@ -8,6 +8,9 @@ use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\PresenceController;
+use App\Exports\PresencesExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Presence; 
 use Illuminate\Support\Facades\Route;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
@@ -44,6 +47,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/presences/qrcode', [PresenceController::class, 'showQrcode'])->name('presences.qrcode');
         Route::get('/presences/qrcode/download-pdf', [PresenceController::class, 'downloadQrCodePDF'])->name('presences.qrcode.download-pdf');
         Route::get('/presences/{attendance}', [PresenceController::class, 'show'])->name('presences.show');
+        Route::get('/presences/{attendance}/presence', [PresenceController::class, 'showPresenceData'])
+        ->name('presences.presence');
         // not present data
         Route::get('/presences/{attendance}/not-present', [PresenceController::class, 'notPresent'])->name('presences.not-present');
         Route::post('/presences/{attendance}/not-present', [PresenceController::class, 'notPresent']);
@@ -73,3 +78,15 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'index'])->name('auth.login');
     Route::post('/login', [AuthController::class, 'authenticate']);
 });
+
+Route::get('/export/presences', function () {
+    // Ambil data kehadiran dari database
+    $presenceData = Presence::with('users')->get(); // Sesuaikan dengan relasi yang ada di model Presence
+
+    // Ekspor data ke file Excel
+    return Excel::download(new PresencesExport($presenceData), 'presences.xlsx');
+})->name('presences.export');
+
+    
+Route::get('/presences/{id}/export', [PresenceController::class, 'export'])->name('presences.export');
+Route::get('/presences/export/{attendance}', [PresenceController::class, 'export'])->name('presences.export');
