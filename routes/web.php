@@ -8,6 +8,7 @@ use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\PresenceController;
+use App\Http\Controllers\PerjalananController;
 use App\Exports\PresencesExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Presence; 
@@ -90,3 +91,20 @@ Route::get('/export/presences', function () {
     
 Route::get('/presences/{id}/export', [PresenceController::class, 'export'])->name('presences.export');
 Route::get('/presences/export/{attendance}', [PresenceController::class, 'export'])->name('presences.export');
+
+//Perjalanan dinas
+Route::get('/perjalanan', [PerjalananController::class, 'index'])->name('perjalanan.index');
+Route::resource('/perjalanan', PerjalananController::class)->only(['index', 'create']); // Create form
+Route::post('/perjalanan', [PerjalananController::class, 'store'])->name('perjalanan.store'); // Store new perjalanan
+Route::get('/perjalanan/{id}/edit', [PerjalananController::class, 'edit'])->name('perjalanan.edit'); // Edit form
+Route::put('/perjalanan/{id}', [PerjalananController::class, 'update'])->name('perjalanan.update'); // Update perjalanan
+Route::get('/perjalanan/{id}', [PerjalananController::class, 'show'])->name('perjalanan.show');
+Route::get('/perjalanan/{id}/download', [PerjalananController::class, 'download'])->name('perjalanan.download');
+Route::get('perjalanan/{id}/download-laporan', [PerjalananController::class, 'downloadLaporan'])->name('perjalanan.downloadLaporan');
+
+
+
+
+
+
+

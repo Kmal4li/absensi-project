@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\Perjalanan;
 use App\Models\Holiday;
 use App\Models\Permission;
 use App\Models\Presence;
@@ -14,16 +15,19 @@ class HomeController extends Controller
     public function index()
     {
         $attendances = Attendance::query()
-            // ->with('positions')
-            ->forCurrentUser(auth()->user()->position_id)
-            ->get()
-            ->sortByDesc('data.is_end')
-            ->sortByDesc('data.is_start');
+        ->forCurrentUser(auth()->user()->position_id)
+        ->get()
+        ->sortByDesc('data.is_end')
+        ->sortByDesc('data.is_start');
 
-        return view('home.index', [
-            "title" => "Beranda",
-            "attendances" => $attendances
-        ]);
+    
+    $perjalanans = Perjalanan::query()->get(); 
+
+    return view('home.index', [
+        "title" => "Beranda",
+        "attendances" => $attendances,
+        "perjalanans" => $perjalanans,  
+    ]);
     }
 
     public function show(Attendance $attendance)
