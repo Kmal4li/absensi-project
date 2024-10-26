@@ -21,22 +21,22 @@
             @if ($perjalanan->getMedia('files')->isNotEmpty())
                 <ul>
                     @foreach ($perjalanan->getMedia('files') as $file)
-<<<<<<< HEAD
+
                         <li>
                             <a href="{{ $file->getPath() }}" class="btn btn-sm btn-primary">Download {{ $file->name }}</a>
                         </li>   
-=======
+
                         <ul>
                             <a href="{{ $file->getUrl() }}" class="btn btn-sm btn-primary">Download {{ $file->name }}</a>
                         </ul>   
->>>>>>> 085dfc412b3b766ad97775f4a8944e0da5f95703
+
                     @endforeach
                 </ul>
             @else
                 <p class="text-muted">Tidak ada file yang diunggah.</p>
             @endif
 
-<<<<<<< HEAD
+
             <p><strong>Laporan Keuangan:</strong></p>
             @if ($perjalanan->laporan_keuangan)
                 <a href="{{ Storage::url($perjalanan->laporan_keuangan) }}" class="btn btn-sm btn-success">Download Laporan Keuangan</a>
@@ -54,7 +54,7 @@
                     @enderror
                 </div>
                 <button type="submit" class="btn btn-primary">Simpan Laporan</button>
-=======
+
             <form action="{{ route('perjalanan.downloadLaporan', $perjalanan->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
@@ -63,13 +63,13 @@
                     @error('laporan_keuangan') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
                 <button type="submit" class="btn btn-primary">Simpan</button>
->>>>>>> 085dfc412b3b766ad97775f4a8944e0da5f95703
+
             </form>
         </div>
     </div>
 </div>
-<<<<<<< HEAD
+
 @endsection
-=======
+
 @endsection
->>>>>>> 085dfc412b3b766ad97775f4a8944e0da5f95703
+

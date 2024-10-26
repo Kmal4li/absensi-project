@@ -10,7 +10,7 @@ class PerjalananController extends Controller
 {
     public function index()
     {
-        $perjalanans = Perjalanan::where('user_id', auth()->user()->id)->paginate(10);
+        $perjalanans = Perjalanan::where('id', auth()->user()->id)->paginate(10);
         return view('perjalanan.index', compact('perjalanans'));
     }
 

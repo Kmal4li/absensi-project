@@ -101,12 +101,11 @@ Route::put('/perjalanan/{id}', [PerjalananController::class, 'update'])->name('p
 Route::get('/perjalanan/{id}', [PerjalananController::class, 'show'])->name('perjalanan.show');
 Route::get('/perjalanan/{id}/download', [PerjalananController::class, 'download'])->name('perjalanan.download');
 Route::get('perjalanan/{id}/download-laporan', [PerjalananController::class, 'downloadLaporan'])->name('perjalanan.downloadLaporan');
-<<<<<<< HEAD
 Route::get('/perjalanan/{id}/upload-laporan', [PerjalananController::class, 'uploadLaporan'])->name('perjalanan.uploadLaporan');
 Route::post('/perjalanan/{id}/store-laporan', [PerjalananController::class, 'storeLaporan'])->name('perjalanan.storeLaporan');
-=======
 
->>>>>>> 085dfc412b3b766ad97775f4a8944e0da5f95703
+
+
 
 
 

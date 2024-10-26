@@ -14,11 +14,7 @@ final class PerjalananTable extends PowerGridComponent
 {
     use ActionButton;
 
-<<<<<<< HEAD
     // Table sort field
-=======
-    //Table sort field
->>>>>>> 085dfc412b3b766ad97775f4a8944e0da5f95703
     public string $sortField = 'perjalanans.created_at';
     public string $sortDirection = 'desc';
 
@@ -47,14 +43,9 @@ final class PerjalananTable extends PowerGridComponent
         if (auth()->check()) {
             $ids = $this->checkedValues();
 
-<<<<<<< HEAD
             if (!$ids) {
                 return $this->dispatchBrowserEvent('showToast', ['success' => false, 'message' => 'Pilih data yang ingin dihapus terlebih dahulu.']);
             }
-=======
-            if (!$ids)
-                return $this->dispatchBrowserEvent('showToast', ['success' => false, 'message' => 'Pilih data yang ingin dihapus terlebih dahulu.']);
->>>>>>> 085dfc412b3b766ad97775f4a8944e0da5f95703
 
             try {
                 Perjalanan::whereIn('id', $ids)->delete();
@@ -111,34 +102,27 @@ final class PerjalananTable extends PowerGridComponent
     |--------------------------------------------------------------------------
     */
     public function addColumns(): PowerGridEloquent
-{
-    return PowerGrid::eloquent()
-        ->addColumn('id')
-        ->addColumn('title')
-        ->addColumn('date_start', fn (Perjalanan $model) => Carbon::parse($model->date_start)->format('d/m/Y'))
-        ->addColumn('start_time', fn (Perjalanan $model) => substr($model->start_time, 0, -3))
-        ->addColumn('date_end', fn (Perjalanan $model) => Carbon::parse($model->date_end)->format('d/m/Y'))
-        ->addColumn('end_time', fn (Perjalanan $model) => substr($model->end_time, 0, -3))
-        ->addColumn('created_at')
-        ->addColumn('created_at_formatted', fn (Perjalanan $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'))
-        ->addColumn('laporan_keuangan', function (Perjalanan $model) {
-            return $model->getMedia('files')->isNotEmpty() ? 'Laporan Tersedia' : 'Tidak ada laporan';
-        });
-}
+    {
+        return PowerGrid::eloquent()
+            ->addColumn('id')
+            ->addColumn('title')
+            ->addColumn('date_start', fn (Perjalanan $model) => Carbon::parse($model->date_start)->format('d/m/Y'))
+            ->addColumn('start_time', fn (Perjalanan $model) => substr($model->start_time, 0, -3))
+            ->addColumn('date_end', fn (Perjalanan $model) => Carbon::parse($model->date_end)->format('d/m/Y'))
+            ->addColumn('end_time', fn (Perjalanan $model) => substr($model->end_time, 0, -3))
+            ->addColumn('created_at')
+            ->addColumn('created_at_formatted', fn (Perjalanan $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'))
+            ->addColumn('laporan_keuangan', function (Perjalanan $model) {
+                return $model->getMedia('files')->isNotEmpty() ? 'Laporan Tersedia' : 'Tidak ada laporan';
+            });
+    }
 
-<<<<<<< HEAD
-=======
-
-
-
->>>>>>> 085dfc412b3b766ad97775f4a8944e0da5f95703
     /*
     |--------------------------------------------------------------------------
     | PowerGrid Columns
     |--------------------------------------------------------------------------
     */
     public function columns(): array
-<<<<<<< HEAD
     {
         return [
             Column::make('ID', 'id')
@@ -179,50 +163,6 @@ final class PerjalananTable extends PowerGridComponent
                 ->searchable(),
         ];
     }
-=======
-{
-    return [
-        Column::make('ID', 'id')
-            ->searchable()
-            ->sortable(),
-
-        Column::make('Nama Perjalanan', 'title')
-            ->searchable()
-            ->makeInputText('title')
-            ->sortable(),
-
-        Column::make('Tanggal Mulai', 'date_start')
-            ->searchable()
-            ->makeInputText('date_start')
-            ->sortable(),
-
-        Column::make('Waktu Mulai', 'start_time')
-            ->searchable()
-            ->makeInputText('start_time')
-            ->sortable(),
-
-        Column::make('Tanggal Selesai', 'date_end')
-            ->searchable()
-            ->makeInputText('date_end')
-            ->sortable(),
-
-        Column::make('Waktu Selesai', 'end_time')
-            ->searchable()
-            ->makeInputText('end_time')
-            ->sortable(),
-
-        Column::make('Laporan Keuangan', 'laporan_keuangan')
-            ->sortable()
-            ->searchable(),
-
-        Column::make('Created at', 'created_at_formatted', 'created_at')
-            ->makeInputDatePicker()
-            ->searchable(),
-    ];
-}
-
-
->>>>>>> 085dfc412b3b766ad97775f4a8944e0da5f95703
 
     /*
     |--------------------------------------------------------------------------
@@ -230,36 +170,24 @@ final class PerjalananTable extends PowerGridComponent
     |--------------------------------------------------------------------------
     */
     public function actions(): array
-{
-    return [
-        Button::make('edit', 'Edit')
-            ->class('badge text-bg-success')
-            ->target('')
-            ->route('perjalanan.edit', ['id' => 'id']),
+    {
+        return [
+            Button::make('edit', 'Edit')
+                ->class('badge text-bg-success')
+                ->target('')
+                ->route('perjalanan.edit', ['id' => 'id']),
 
-        Button::make('download', 'Download Laporan')
-            ->class('btn btn-primary')
-            ->target('_blank')  
-            ->route('perjalanan.downloadLaporan', ['id' => 'id'])
-            
-    ];
-}
+            Button::make('download', 'Download Laporan')
+                ->class('btn btn-primary')
+                ->target('_blank')
+                ->route('perjalanan.downloadLaporan', ['id' => 'id'])
+        ];
+    }
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 085dfc412b3b766ad97775f4a8944e0da5f95703
     /*
     |--------------------------------------------------------------------------
     | Action Rules
     |--------------------------------------------------------------------------
     */
-
-    // Add action rules if necessary
-<<<<<<< HEAD
+    // Define action rules here if necessary
 }
-=======
-
-}
->>>>>>> 085dfc412b3b766ad97775f4a8944e0da5f95703
