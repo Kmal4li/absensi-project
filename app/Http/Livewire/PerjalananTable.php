@@ -14,7 +14,7 @@ final class PerjalananTable extends PowerGridComponent
 {
     use ActionButton;
 
-    //Table sort field
+    // Table sort field
     public string $sortField = 'perjalanans.created_at';
     public string $sortDirection = 'desc';
 
@@ -43,8 +43,9 @@ final class PerjalananTable extends PowerGridComponent
         if (auth()->check()) {
             $ids = $this->checkedValues();
 
-            if (!$ids)
+            if (!$ids) {
                 return $this->dispatchBrowserEvent('showToast', ['success' => false, 'message' => 'Pilih data yang ingin dihapus terlebih dahulu.']);
+            }
 
             try {
                 Perjalanan::whereIn('id', $ids)->delete();
@@ -116,57 +117,52 @@ final class PerjalananTable extends PowerGridComponent
         });
 }
 
-
-
-
     /*
     |--------------------------------------------------------------------------
     | PowerGrid Columns
     |--------------------------------------------------------------------------
     */
     public function columns(): array
-{
-    return [
-        Column::make('ID', 'id')
-            ->searchable()
-            ->sortable(),
+    {
+        return [
+            Column::make('ID', 'id')
+                ->searchable()
+                ->sortable(),
 
-        Column::make('Nama Perjalanan', 'title')
-            ->searchable()
-            ->makeInputText('title')
-            ->sortable(),
+            Column::make('Nama Perjalanan', 'title')
+                ->searchable()
+                ->makeInputText('title')
+                ->sortable(),
 
-        Column::make('Tanggal Mulai', 'date_start')
-            ->searchable()
-            ->makeInputText('date_start')
-            ->sortable(),
+            Column::make('Tanggal Mulai', 'date_start')
+                ->searchable()
+                ->makeInputText('date_start')
+                ->sortable(),
 
-        Column::make('Waktu Mulai', 'start_time')
-            ->searchable()
-            ->makeInputText('start_time')
-            ->sortable(),
+            Column::make('Waktu Mulai', 'start_time')
+                ->searchable()
+                ->makeInputText('start_time')
+                ->sortable(),
 
-        Column::make('Tanggal Selesai', 'date_end')
-            ->searchable()
-            ->makeInputText('date_end')
-            ->sortable(),
+            Column::make('Tanggal Selesai', 'date_end')
+                ->searchable()
+                ->makeInputText('date_end')
+                ->sortable(),
 
-        Column::make('Waktu Selesai', 'end_time')
-            ->searchable()
-            ->makeInputText('end_time')
-            ->sortable(),
+            Column::make('Waktu Selesai', 'end_time')
+                ->searchable()
+                ->makeInputText('end_time')
+                ->sortable(),
 
-        Column::make('Laporan Keuangan', 'laporan_keuangan')
-            ->sortable()
-            ->searchable(),
+            Column::make('Laporan Keuangan', 'laporan_keuangan')
+                ->sortable()
+                ->searchable(),
 
-        Column::make('Created at', 'created_at_formatted', 'created_at')
-            ->makeInputDatePicker()
-            ->searchable(),
-    ];
-}
-
-
+            Column::make('Created at', 'created_at_formatted', 'created_at')
+                ->makeInputDatePicker()
+                ->searchable(),
+        ];
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -189,8 +185,6 @@ final class PerjalananTable extends PowerGridComponent
     ];
 }
 
-
-
     /*
     |--------------------------------------------------------------------------
     | Action Rules
@@ -198,5 +192,4 @@ final class PerjalananTable extends PowerGridComponent
     */
 
     // Add action rules if necessary
-
 }

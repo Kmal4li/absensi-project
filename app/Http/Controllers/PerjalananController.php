@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Perjalanan;
@@ -9,9 +8,33 @@ use Illuminate\Support\Facades\Storage;
 class PerjalananController extends Controller
 {
     public function index()
+    {
+        $perjalanans = Perjalanan::where('id', auth()->user()->id)->paginate(10);
+        return view('perjalanan.index', compact('perjalanans'));
+    }
+
+public function uploadLaporan($id)
 {
-    $perjalanans = Perjalanan::where('id', auth()->user()->id)->paginate(10);
-    return view('perjalanan.index', compact('perjalanans'));
+    $perjalanan = Perjalanan::findOrFail($id);
+    return view('perjalanan.upload_laporan', compact('perjalanan'));
+}
+
+public function storeLaporan(Request $request, $id)
+{
+    $validatedData = $request->validate([
+        'laporan_keuangan' => 'required|file|mimes:pdf|max:20480',
+    ]);
+
+    $perjalanan = Perjalanan::findOrFail($id);
+
+    $fileName = 'laporan_keuangan_' . auth()->user()->id . '_' . time() . '.' . $request->file('laporan_keuangan')->getClientOriginalExtension();
+
+    $filePath = $request->file('laporan_keuangan')->storeAs('laporan_keuangan/' . $id, $fileName, 'public');
+
+    $perjalanan->laporan_keuangan = $filePath;
+    $perjalanan->save();
+
+    return redirect()->route('perjalanan.show', $id)->with('success', 'Laporan berhasil diupload!');
 }
 
 
@@ -22,14 +45,27 @@ public function show($id)
     return view('perjalanan.show', compact('perjalanan')); 
 }
     
-    // Display the create form
-    public function create()
-    {   
-        return view('perjalanan.create');  
-    }
+// Display the create form
+public function create()
+{   
+    return view('perjalanan.create');  
+}
 
-    // Download file
-    public function download($id)
+// Download file
+// public function download($id)
+// {
+//     $perjalanan = Perjalanan::findOrFail($id);
+//     $mediaItems = $perjalanan->getMedia('files');
+
+//     if ($mediaItems->isNotEmpty()) {
+//         $file = $mediaItems->first();
+//         return response()->download($file->getPath(), $file->file_name);
+//     }
+
+//     return redirect()->back()->with('error', 'File tidak ditemukan.');
+// }
+
+public function download($id)
 {
     $perjalanan = Perjalanan::findOrFail($id);
     $mediaItems = $perjalanan->getMedia('files');
@@ -37,8 +73,8 @@ public function show($id)
     if ($mediaItems->isNotEmpty()) {
         $file = $mediaItems->first();
 
-        if (file_exists($file->getPath())) {
-            return response()->download($file->getPath(), $file->original_name);
+        if (Storage::disk('public')->exists($file->getPath())) {
+            return response()->download($file->getPath(), $file->file_name);
         } else {
             return redirect()->back()->with('error', 'File tidak ditemukan di server.');
         }
@@ -47,18 +83,29 @@ public function show($id)
     return redirect()->back()->with('error', 'File tidak ditemukan.');
 }
 
+
+
+// public function downloadLaporan($id)
+// {
+//     $perjalanan = Perjalanan::findOrFail($id);
+//     $laporan = $perjalanan->laporan; 
+
+//     return Storage::download($laporan->getPath());
+// }
+
 public function downloadLaporan($id)
 {
     $perjalanan = Perjalanan::findOrFail($id);
+    $filePath = $perjalanan->laporan_keuangan;
 
-    if ($perjalanan->getMedia('files')->isNotEmpty()) {
-        $file = $perjalanan->getFirstMedia('files');
-        return response()->download($file->getPath(), $file->file_name);
+    if (Storage::disk('public')->exists($filePath)) {
+        return response()->download(storage_path("app/public/{$filePath}"), 'laporan.pdf', [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 
     return redirect()->back()->with('error', 'Laporan tidak ditemukan.');
 }
-
 
 
 public function save()
@@ -125,10 +172,9 @@ public function save()
             'start_time' => $data['start_time'],
             'date_end' => $data['date_end'],
             'end_time' => $data['end_time'],
-            'user_id' => auth()->user()->id, // Menggunakan 'user_id' jika itu nama kolom di tabel Anda
+            'user_id' => auth()->user()->id,
         ]);
 
-        // Menambahkan file perjalanan ke koleksi media jika ada
         if (isset($data['file_perjalanan'])) {
             $perjalanan->addMedia($data['file_perjalanan'])
                 ->toMediaCollection('files');
@@ -182,3 +228,5 @@ public function save()
         return redirect()->route('perjalanan.edit', $id)->with('success', 'Perjalanan berhasil diupdate!');
     }
 }
+
+

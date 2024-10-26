@@ -10,7 +10,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
 use PowerComponents\LivewirePowerGrid\Traits\ActionButton;
-use PowerComponents\LivewirePowerGrid\{Button, Column, Exportable, Footer, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
+use PowerComponents\LivewirePowerGrid\{Button, Column, Footer, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
 
 final class EmployeeTable extends PowerGridComponent
 {
@@ -75,7 +75,6 @@ final class EmployeeTable extends PowerGridComponent
                 return $this->dispatchBrowserEvent('showToast', ['success' => false, 'message' => 'Pilih data yang ingin diedit terlebih dahulu.']);
 
             $ids = join('-', $ids);
-            // return redirect(route('employees.edit', ['ids' => $ids])); // tidak berfungsi/menredirect
             return $this->dispatchBrowserEvent('redirect', ['url' => route('employees.edit', ['ids' => $ids])]);
         }
     }
@@ -92,9 +91,9 @@ final class EmployeeTable extends PowerGridComponent
         $this->showCheckBox();
 
         return [
-            Exportable::make('export')
-                ->striped()
-                ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
+            // Exportable::make('export')
+            //     ->striped()
+            //     ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
             Header::make()->showSearchInput()->showToggleColumns(),
             Footer::make()
                 ->showPerPage()

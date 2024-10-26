@@ -21,23 +21,32 @@
             @if ($perjalanan->getMedia('files')->isNotEmpty())
                 <ul>
                     @foreach ($perjalanan->getMedia('files') as $file)
-                        <ul>
-                            <a href="{{ $file->getUrl() }}" class="btn btn-sm btn-primary">Download {{ $file->name }}</a>
-                        </ul>   
+                        <li>
+                            <a href="{{ $file->getPath() }}" class="btn btn-sm btn-primary">Download {{ $file->name }}</a>
+                        </li>   
                     @endforeach
                 </ul>
             @else
                 <p class="text-muted">Tidak ada file yang diunggah.</p>
             @endif
 
-            <form action="{{ route('perjalanan.downloadLaporan', $perjalanan->id) }}" method="POST" enctype="multipart/form-data">
+            <p><strong>Laporan Keuangan:</strong></p>
+            @if ($perjalanan->laporan_keuangan)
+                <a href="{{ Storage::url($perjalanan->laporan_keuangan) }}" class="btn btn-sm btn-success">Download Laporan Keuangan</a>
+            @else
+                <p class="text-muted">Belum ada laporan keuangan yang diunggah.</p>
+            @endif
+
+            <form action="{{ route('perjalanan.storeLaporan', $perjalanan->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
-                    <label for="laporan_keuangan" class="form-label">File Laporan (PDF)</label>
-                    <input type="file" id="laporan_keuangan" name="laporan_keuangan" class="form-control" accept="application/pdf">
-                    @error('laporan_keuangan') <span class="text-danger">{{ $message }}</span> @enderror
+                    <label for="laporan_keuangan" class="form-label">Unggah File Laporan (PDF)</label>
+                    <input type="file" id="laporan_keuangan" name="laporan_keuangan" class="form-control" accept="application/pdf" required>
+                    @error('laporan_keuangan') 
+                        <span class="text-danger">{{ $message }}</span> 
+                    @enderror
                 </div>
-                <button type="submit" class="btn btn-primary">Simpan</button>
+                <button type="submit" class="btn btn-primary">Simpan Laporan</button>
             </form>
         </div>
     </div>
