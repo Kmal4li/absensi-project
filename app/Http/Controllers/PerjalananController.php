@@ -61,6 +61,19 @@ class PerjalananController extends Controller
         return redirect()->back()->with('error', 'Laporan tidak ditemukan.');
     }
 
+    public function downloadPerjalanan($id)
+{
+    $perjalanan = Perjalanan::findOrFail($id);
+    $file = $perjalanan->getFirstMedia('files');
+
+    if ($file) {
+        return response()->download($file->getPath(), $file->file_name);
+    }
+
+    return back()->with('error', 'File tidak ditemukan.');
+}
+
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([

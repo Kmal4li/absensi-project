@@ -28,6 +28,7 @@ final class PerjalananTable extends PowerGridComponent
         );
     }
 
+
     public function header(): array
     {
         return [

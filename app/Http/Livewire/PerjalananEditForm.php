@@ -30,16 +30,12 @@ class PerjalananEditForm extends Component
     public function update()
     {
         $this->validate();
-
-        // Update perjalanan attributes
         $this->perjalanan->save();
 
         // Handle file upload
         if ($this->file_perjalanan) {
-            // Clear existing media if necessary (optional)
             $this->perjalanan->clearMediaCollection('perjalanan');
 
-            // Add the new file to the media collection
             $this->perjalanan->addMedia($this->file_perjalanan)->toMediaCollection('perjalanan');
         }
 

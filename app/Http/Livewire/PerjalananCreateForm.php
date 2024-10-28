@@ -37,10 +37,8 @@ class PerjalananCreateForm extends Component
             'start_time' => $this->start_time,
             'date_end' => $this->date_end,
             'end_time' => $this->end_time,
-            // Kolom 'file_perjalanan' akan dikelola menggunakan Media Library
         ]);
 
-        // Jika ada file perjalanan, simpan file tersebut
         if ($this->file_perjalanan) {
             $perjalanan->addMedia($this->file_perjalanan)->toMediaCollection('files');
         }

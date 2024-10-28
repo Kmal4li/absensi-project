@@ -20,17 +20,12 @@
             <p><strong>File Perjalanan:</strong></p>
             @if ($perjalanan->getMedia('files')->isNotEmpty())
                 <ul>
-                    @foreach ($perjalanan->getMedia('files') as $file)
+                @foreach ($perjalanan->getMedia('files') as $file)
+    <li>
+        <a href="{{ route('perjalanan.downloadPerjalanan', ['id' => $file->model_id]) }}" class="btn btn-sm btn-primary">Download {{ $file->name }}</a>
+    </li>
+@endforeach
 
-                        <li>
-                            <a href="{{ $file->getPath() }}" class="btn btn-sm btn-primary">Download {{ $file->name }}</a>
-                        </li>   
-
-                        <ul>
-                            <a href="{{ $file->getUrl() }}" class="btn btn-sm btn-primary">Download {{ $file->name }}</a>
-                        </ul>   
-
-                    @endforeach
                 </ul>
             @else
                 <p class="text-muted">Tidak ada file yang diunggah.</p>
@@ -55,21 +50,11 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Simpan Laporan</button>
 
-            <form action="{{ route('perjalanan.downloadLaporan', $perjalanan->id) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="mb-3">
-                    <label for="laporan_keuangan" class="form-label">File Laporan (PDF)</label>
-                    <input type="file" id="laporan_keuangan" name="laporan_keuangan" class="form-control" accept="application/pdf">
-                    @error('laporan_keuangan') <span class="text-danger">{{ $message }}</span> @enderror
-                </div>
-                <button type="submit" class="btn btn-primary">Simpan</button>
-
-            </form>
+            
         </div>
     </div>
 </div>
 
 @endsection
 
-@endsection
 
