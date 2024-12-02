@@ -34,7 +34,7 @@
 
             <p><strong>Laporan Keuangan:</strong></p>
             @if ($perjalanan->laporan_keuangan)
-                <a href="{{ Storage::url($perjalanan->laporan_keuangan) }}" class="btn btn-sm btn-success">Download Laporan Keuangan</a>
+                <a href="{{ Storage::url($perjalanan->laporan_keuangan) }}" class="btn btn-sm btn-success">Download Laporan Pengeluaran</a>
             @else
                 <p class="text-muted">Belum ada laporan keuangan yang diunggah.</p>
             @endif

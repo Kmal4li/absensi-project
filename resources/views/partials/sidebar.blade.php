@@ -1,7 +1,8 @@
 <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
     <div class="position-sticky pt-3">
         <ul class="nav flex-column">
-            @if (auth()->user()->isAdmin() or auth()->user()->isOperator())
+        @if (auth()->check() && (auth()->user()->role_id === 1 || auth()->user()->role_id === 2))
+        <li class="nav-item">
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('dashboard.*') ? 'active' : '' }}" aria-current="page"
                     href="{{ route('dashboard.index') }}">

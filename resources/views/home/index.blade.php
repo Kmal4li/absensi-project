@@ -58,29 +58,29 @@
         </div>
 
         <div class="col-md-8">
-            <div class="card shadow-sm mb-2">
-                <div class="card-header">
-                    Data Perjalanan Dinas
-                </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        @foreach ($perjalanans as $perjalanan)
-                        <a href="{{ route('perjalanan.show', $perjalanan->id) }}"
-                            class="list-group-item d-flex justify-content-between align-items-start py-3">
-                            <div class="ms-2 me-auto">
-                                <div class="fw-bold">{{ $perjalanan->title }}</div>
-                                <p class="mb-0">{{ $perjalanan->description }}</p>
-                            </div>
-                            @include('partials.perjalanan-badges')
-                        </a>
-                        @endforeach
-                    </ul>
-                    @if ($perjalanans->isEmpty())
-                        <p class="text-muted">Tidak ada data perjalanan dinas.</p>
-                    @endif
-                </div>
-            </div>
+    <div class="card shadow-sm mb-2">
+        <div class="card-header">
+            Data Perjalanan Dinas
         </div>
+        <div class="card-body">
+            <ul class="list-group">
+                @foreach ($perjalanans as $perjalanan)
+                <a href="{{ route('perjalanan.show', $perjalanan->id) }}"
+                    class="list-group-item d-flex justify-content-between align-items-start py-3">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">{{ $perjalanan->title }}</div>
+                        <p class="mb-0">{{ $perjalanan->description }}</p>
+                    </div>
+                    @include('partials.perjalanan-badges')
+                </a>
+                @endforeach
+            </ul>
+            @if ($perjalanans->isEmpty())
+                <p class="text-muted">Tidak ada data perjalanan dinas.</p>
+            @endif
+        </div>
+    </div>
+</div>
     </div>
 </div>
 <div class="footer text-center py-4 mt-auto">

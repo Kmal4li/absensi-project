@@ -78,4 +78,9 @@ class User extends Authenticatable
     {
         return $this->role_id === self::USER_ROLE_ID;
     }
+
+    public function perjalanans()
+    {
+        return $this->belongsToMany(Perjalanan::class, 'perjalanan_user', 'user_id', 'perjalanan_id');
+    }
 }

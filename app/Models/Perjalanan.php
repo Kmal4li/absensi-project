@@ -25,6 +25,11 @@ class Perjalanan extends Model implements HasMedia
         'laporan_keuangan',
     ];
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'perjalanan_user', 'perjalanan_id', 'user_id');
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('perjalanan') // Nama koleksi

@@ -92,10 +92,9 @@ class PerjalananController extends Controller
                 'start_time' => $data['start_time'],
                 'date_end' => $data['date_end'],
                 'end_time' => $data['end_time'],
-                'user_id' => auth()->user()->id, // Menggunakan 'user_id' jika itu nama kolom di tabel Anda
+                'user_id' => auth()->user()->id, 
             ]);
 
-            // Menambahkan file perjalanan ke koleksi media jika ada
             if (isset($data['file_perjalanan'])) {
                 $perjalanan->addMedia($data['file_perjalanan'])
                     ->toMediaCollection('files');

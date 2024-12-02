@@ -8,7 +8,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
 use PowerComponents\LivewirePowerGrid\Traits\ActionButton;
-use PowerComponents\LivewirePowerGrid\{Button, Column, Detail, Exportable, Footer, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
+use PowerComponents\LivewirePowerGrid\{Button, Column, Detail, Footer, Exportable, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
 
 final class PerjalananTable extends PowerGridComponent
 {
@@ -113,10 +113,7 @@ final class PerjalananTable extends PowerGridComponent
             ->addColumn('end_time', fn (Perjalanan $model) => substr($model->end_time, 0, -3))
             ->addColumn('created_at')
             ->addColumn('created_at_formatted', fn (Perjalanan $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'))
-            ->addColumn('laporan_keuangan', function (Perjalanan $model) {
-                return $model->getMedia('files')->isNotEmpty() ? 'Laporan Tersedia' : 'Tidak ada laporan';
-            });
-    }
+    ;}
 
     /*
     |--------------------------------------------------------------------------
@@ -155,10 +152,6 @@ final class PerjalananTable extends PowerGridComponent
                 ->makeInputText('end_time')
                 ->sortable(),
 
-            Column::make('Laporan Keuangan', 'laporan_keuangan')
-                ->sortable()
-                ->searchable(),
-
             Column::make('Created at', 'created_at_formatted', 'created_at')
                 ->makeInputDatePicker()
                 ->searchable(),
@@ -179,7 +172,7 @@ final class PerjalananTable extends PowerGridComponent
                 ->route('perjalanan.edit', ['id' => 'id']),
 
             Button::make('download', 'Download Laporan')
-                ->class('btn btn-primary')
+                ->class('badge text-bg-success')
                 ->target('_blank')
                 ->route('perjalanan.downloadLaporan', ['id' => 'id'])
         ];
