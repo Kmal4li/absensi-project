@@ -15,11 +15,13 @@ return new class extends Migration
     {
         Schema::create('presences', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('attendance_id')->constrained()->cascadeOnDelete();
-            $table->date("presence_date");
-            $table->time("presence_enter_time");
-            $table->time("presence_out_time")->nullable();
+            $table->unsignedBigInteger('attendance_id');
+            $table->unsignedBigInteger('user_id');
+            $table->date('presence_date');
+            $table->time('presence_enter_time');
+            $table->time('presence_out_time')->nullable();
+            $table->string('photo')->nullable()->after('is_permission');
+            $table->boolean('is_permission')->default(false);
             $table->timestamps();
         });
     }

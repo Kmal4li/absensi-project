@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Position;
 use App\Models\Role;
+use App\Models\Presence;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -16,6 +17,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        Presence::factory(10)->create(); // Membuat 10 data dummy
+
+    dd(Presence::all()); // Debu
+
         $this->call(RoleSeeder::class);
         $this->call(PositionSeeder::class);
 

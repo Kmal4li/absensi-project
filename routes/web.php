@@ -9,6 +9,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\PresenceController;
 use App\Http\Controllers\PerjalananController;
+use App\Http\Controllers\PerjalananUserTransaksiController;
+use App\Http\Controllers\PhotoController;
 use App\Exports\PresencesExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Presence; 
@@ -25,7 +27,6 @@ use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 
 Route::middleware('auth')->group(function () {
     Route::middleware('role:admin,operator')->group(function () {
@@ -44,7 +45,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/attendances/edit', [AttendanceController::class, 'edit'])->name('attendances.edit');
 
         // presences (kehadiran)
-        Route::resource('/presences', PresenceController::class)->only(['index']);
+Route::get('/presence', [PresenceController::class, 'index'])->name('presences.index');
         Route::get('/presences/qrcode', [PresenceController::class, 'showQrcode'])->name('presences.qrcode');
         Route::get('/presences/qrcode/download-pdf', [PresenceController::class, 'downloadQrCodePDF'])->name('presences.qrcode.download-pdf');
         Route::get('/presences/{attendance}', [PresenceController::class, 'show'])->name('presences.show');
@@ -88,7 +89,6 @@ Route::get('/export/presences', function () {
     return Excel::download(new PresencesExport($presenceData), 'presences.xlsx');
 })->name('presences.export');
 
-    
 Route::get('/presences/{id}/export', [PresenceController::class, 'export'])->name('presences.export');
 Route::get('/presences/export/{attendance}', [PresenceController::class, 'export'])->name('presences.export');
 
@@ -103,12 +103,7 @@ Route::get('/perjalanan/{id}/download', [PerjalananController::class, 'downloadP
 Route::get('perjalanan/{id}/download-laporan', [PerjalananController::class, 'downloadLaporan'])->name('perjalanan.downloadLaporan');
 Route::get('/perjalanan/{id}/upload-laporan', [PerjalananController::class, 'uploadLaporan'])->name('perjalanan.uploadLaporan');
 Route::post('/perjalanan/{id}/store-laporan', [PerjalananController::class, 'storeLaporan'])->name('perjalanan.storeLaporan');
+Route::post('/perjalanan/{id}/store-laporan', [PerjalananUserTransaksiController::class, 'store'])->name('laporan-keuangan.store');
 
-
-
-
-
-
-
-
-
+//kamera
+Route::post('/save-photo', [PresenceController::class, 'savePhoto'])->name('save-photo');

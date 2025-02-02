@@ -52,6 +52,21 @@ class PresenceForm extends Component
             $this->longitude == $this->allowedLongitude
         );
     }
+    public function store()
+{
+    $this->validate([
+        'photo' => 'required|string',
+    ]);
+
+    Attendance::create([
+        'title' => $this->title,
+        'description' => $this->description,
+        'photo' => $this->photo, // Simpan foto sebagai base64 atau path
+    ]);
+
+    session()->flash('message', 'Absensi berhasil disimpan.');
+}
+
 
     public function sendEnterPresence()
     {
@@ -87,7 +102,6 @@ class PresenceForm extends Component
 
     public function sendOutPresence()
     {
-        // jika absensi sudah jam pulang (is_end) dan tidak menggunakan qrcode (kebalikan)
         if (!$this->attendance->data->is_end && $this->attendance->data->is_using_qrcode) {
             return false;
         }

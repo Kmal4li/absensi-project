@@ -9,122 +9,147 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\PresencesExport;
 use App\Exports\AttendanceExport;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Support\Facades\Storage;
 
 class PresenceController extends Controller
 {
-    public function index()
+    
+    protected function applyDateFilter($query, $fromDate, $toDate)
+    {
+        if ($fromDate && $toDate) {
+            $query->whereBetween('presence_date', [$fromDate, $toDate]);
+        }
+        return $query;
+    }
+
+    public function index(Request $request)
 {
-    $attendances = Attendance::all()->sortByDesc(function ($attendance) {
-        return $attendance->data->is_end ?? 0; 
-    })->sortByDesc(function ($attendance) {
-        return $attendance->data->is_start ?? 0; 
+    $presences = Presence::all();
+    $fromDate = $request->input('display-by-date-from');
+    $toDate = $request->input('display-by-date-to');
+
+    $query = Attendance::query();
+
+    // Terapkan filter tanggal jika ada
+    $query = $this->applyDateFilter($query, $fromDate, $toDate);
+
+    $attendances = $query->get()->sortByDesc(function ($attendance) {
+        // Gabungkan kedua logika sortir menjadi satu
+        return ($attendance->data->is_end ?? 0) + ($attendance->data->is_start ?? 0);
     });
 
     return view('presences.index', [
         'attendances' => $attendances,
         'title' => 'Daftar Kehadiran'
     ]);
-
-    $fromDate = $request->input('display-by-date-from');
-    $toDate = $request->input('display-by-date-to');
-
-    $query = Attendance::query();
-
-    // Apply date range filter if dates are provided
-    if ($fromDate && $toDate) {
-        $query->whereBetween('presence_date', [$fromDate, $toDate]);
-    }
-
-    $attendanceData = $query->get();
-
-    return view('your.view', compact('attendanceData'));
 }
+
 
     public function show(Attendance $attendance)
     {
         $attendance->load(['positions', 'presences']);
 
-        // dd($qrcode);
+        $photoUrl = Storage::url('attendance_photos/' . $attendance->photo);
+
+        $data = [
+            // Tambahkan data yang diperlukan di sini
+        ];
+
         return view('presences.show', [
             "title" => "Data Detail Kehadiran",
             "attendance" => $attendance,
+            "photoUrl" => $photoUrl,
+            "data" => $data,
         ]);
-
     }
+
+public function savePhoto(Request $request)
+{
+    $request->validate([
+        'photo' => 'required|string',
+    ]);
+
+    $photoData = $request->input('photo');
+    $photoData = str_replace('data:image/png;base64,', '', $photoData);
+    $photoData = str_replace(' ', '+', $photoData);
+    $imageName = 'photo_' . time() . '.png';
+
+    
+    \Storage::disk('public')->put('storage/photos/' . $imageName, base64_decode($photoData));
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Foto berhasil disimpan.',
+        'path' => 'storage/photos/' . $imageName, 
+    ]);
+}
+
 
     public function export($id)
     {
         $attendance = Attendance::findOrFail($id);
         $presenceData = $attendance->presences()->get();
         $startDate = request('start_date', now()->toDateString());
-        $endDate = request('end_date', now()->toDateString()); 
+        $endDate = request('end_date', now()->toDateString());
 
         return Excel::download(new AttendanceExport($presenceData, $startDate, $endDate), 'attendance-' . $attendance->id . '.xlsx');
     }
 
     public function showPresenceData(Attendance $attendance)
-{
-    // Get the date range from request or use today's date as default
-    $startDate = request('start_date', now()->toDateString());
-    $endDate = request('end_date', now()->toDateString());
+    {
+        $startDate = request('start_date', now()->toDateString());
+        $endDate = request('end_date', now()->toDateString());
 
-    // Mengambil presences dengan relasi user berdasarkan rentang tanggal
-    $presences = Presence::with('users') // Ambil semua kehadiran dengan relasi pengguna
-        ->where('attendance_id', $attendance->id)
-        ->whereBetween('presence_date', [$startDate, $endDate]) // Filter by date range
-        ->get();
+        $presences = Presence::with('user')
+            ->where('attendance_id', $attendance->id)
+            ->whereBetween('presence_date', [$startDate, $endDate])
+            ->get();
 
-    // Mengelompokkan data kehadiran berdasarkan tanggal
-    $presenceData = $presences->groupBy('presence_date')->map(function ($group) {
-        return [
-            'presence_date' => $group->first()->presence_date,
-            'users' => $group->map(function ($presence) {
-                return [
-                    'name' => $presence->user->name,
-                    'presence_enter_time' => $presence->presence_enter_time,
-                    'presence_out_time' => $presence->presence_out_time,
-                    'email' => $presence->user->email,
-                    'phone' => $presence->user->phone,
-                    'position' => $presence->user->position->name,
-                ];
-            })
-        ];
-    })->toArray();
+        $presenceData = $presences->groupBy('presence_date')->map(function ($group) {
+            return [
+                'presence_date' => $group->first()->presence_date,
+                'users' => $group->map(function ($presence) {
+                    return [
+                        'name' => $presence->user->name,
+                        'presence_enter_time' => $presence->presence_enter_time,
+                        'presence_out_time' => $presence->presence_out_time,
+                        'email' => $presence->user->email,
+                        'phone' => $presence->user->phone,
+                        'position' => $presence->user->position->name,
+                    ];
+                })
+            ];
+        })->toArray();
 
-    return view('presences.presence', compact('attendance', 'presenceData'));
-}
-
-
-
-public function getNotPresentEmployees($presences)
-{
-    $uniquePresenceDates = $presences->unique("presence_date")->pluck('presence_date');
-    $uniquePresenceDatesAndCompactTheUserIds = $uniquePresenceDates->map(function ($date) use ($presences) {
-        return [
-            "presence_date" => $date,
-            "user_ids" => $presences->where('presence_date', $date)->pluck('user_id')->toArray()
-        ];
-    });
-
-    $notPresentData = [];
-    foreach ($uniquePresenceDatesAndCompactTheUserIds as $presence) {
-        $notPresentData[] = [
-            "not_presence_date" => $presence['presence_date'],
-            "users" => User::query()
-                ->with('position')
-                ->onlyEmployees()
-                ->whereNotIn('id', $presence['user_ids'])
-                ->get()
-                ->toArray()
-        ];
+        return view('presences.presence', compact('attendance', 'presenceData'));
     }
-    return $notPresentData;
-}
 
+    public function getNotPresentEmployees($presences)
+    {
+        $uniquePresenceDates = $presences->unique("presence_date")->pluck('presence_date');
+        $uniquePresenceDatesAndCompactTheUserIds = $uniquePresenceDates->map(function ($date) use ($presences) {
+            return [
+                "presence_date" => $date,
+                "user_ids" => $presences->where('presence_date', $date)->pluck('user_id')->toArray()
+            ];
+        });
 
+        $notPresentData = [];
+        foreach ($uniquePresenceDatesAndCompactTheUserIds as $presence) {
+            $notPresentData[] = [
+                "not_presence_date" => $presence['presence_date'],
+                "users" => User::query()
+                    ->with('position')
+                    ->onlyEmployees()
+                    ->whereNotIn('id', $presence['user_ids'])
+                    ->get()
+                    ->toArray()
+            ];
+        }
+        return $notPresentData;
+    }
 
     public function showQrcode()
     {
@@ -149,66 +174,55 @@ public function getNotPresentEmployees($presences)
 
     public function getQrCode(?string $code): string
     {
-        if (!Attendance::query()->where('code', $code)->first())
+        if (!Attendance::query()->where('code', $code)->first()) {
             throw new NotFoundHttpException(message: "Tidak ditemukan absensi dengan code '$code'.");
+        }
 
         return parent::getQrCode($code);
     }
 
     public function notPresent(Attendance $attendance)
-{
-    $byDate = request('display-by-date', now()->toDateString());
+    {
+        $byDate = request('display-by-date', now()->toDateString());
 
-    // Ambil presences pada tanggal tertentu
-    $presences = Presence::query()
-        ->where('attendance_id', $attendance->id)
-        ->where('presence_date', $byDate)
-        ->get(['presence_date', 'user_id']);
+        $presences = Presence::query()
+            ->where('attendance_id', $attendance->id)
+            ->where('presence_date', $byDate)
+            ->get(['presence_date', 'user_id']);
 
-    // Jika tidak ada presensi, tampilkan semua karyawan
-    if ($presences->isEmpty()) {
-        $notPresentData[] = [
-            "not_presence_date" => $byDate,
-            "users" => User::query()
-                ->with('position')
-                ->onlyEmployees()
-                ->get()
-                ->toArray()
-        ];
-    } else {
-        $notPresentData = $this->getNotPresentEmployees($presences);
+        $notPresentData = $presences->isEmpty() 
+            ? [[ "not_presence_date" => $byDate, "users" => User::query()->with('position')->onlyEmployees()->get()->toArray() ]]
+            : $this->getNotPresentEmployees($presences);
+
+        return view('presences.not-present', [
+            "title" => "Data Karyawan Tidak Hadir",
+            "attendance" => $attendance,
+            "notPresentData" => $notPresentData
+        ]);
     }
 
-    return view('presences.not-present', [
-        "title" => "Data Karyawan Tidak Hadir",
-        "attendance" => $attendance,
-        "notPresentData" => $notPresentData
-    ]);
-}
+    public function permissions(Attendance $attendance)
+    {
+        $byDate = request('display-by-date', now()->toDateString());
 
-public function permissions(Attendance $attendance)
-{
-    $byDate = request('display-by-date', now()->toDateString());
+        $permissions = Permission::query()
+            ->with(['user', 'user.position'])
+            ->where('attendance_id', $attendance->id)
+            ->where('permission_date', $byDate)
+            ->get();
 
-    $permissions = Permission::query()
-        ->with(['user', 'user.position'])
-        ->where('attendance_id', $attendance->id)
-        ->where('permission_date', $byDate)
-        ->get();
-
-    return view('presences.permissions', [
-        "title" => "Data Karyawan Izin",
-        "attendance" => $attendance,
-        "permissions" => $permissions,
-        "date" => $byDate
-    ]);
-}
-
+        return view('presences.permissions', [
+            "title" => "Data Karyawan Izin",
+            "attendance" => $attendance,
+            "permissions" => $permissions,
+            "date" => $byDate
+        ]);
+    }
 
     public function presentUser(Request $request, Attendance $attendance)
     {
         $validated = $request->validate([
-            'user_id' => 'required|string|numeric',
+            'user_id' => 'required|numeric',
             "presence_date" => "required|date"
         ]);
 
@@ -220,9 +234,9 @@ public function permissions(Attendance $attendance)
             ->where('presence_date', $validated['presence_date'])
             ->first();
 
-        // jika data user yang didapatkan dari request user_id, presence_date, sudah absen atau sudah ada ditable presences
-        if ($presence || !$user)
+        if ($presence || !$user) {
             return back()->with('failed', 'Request tidak diterima.');
+        }
 
         Presence::create([
             "attendance_id" => $attendance->id,
@@ -239,7 +253,7 @@ public function permissions(Attendance $attendance)
     public function acceptPermission(Request $request, Attendance $attendance)
     {
         $validated = $request->validate([
-            'user_id' => 'required|string|numeric',
+            'user_id' => 'required|numeric',
             "permission_date" => "required|date"
         ]);
 
@@ -257,9 +271,9 @@ public function permissions(Attendance $attendance)
             ->where('presence_date', $validated['permission_date'])
             ->first();
 
-        // jika data user yang didapatkan dari request user_id, presence_date, sudah absen atau sudah ada ditable presences
-        if ($presence || !$user)
+        if ($presence || !$user) {
             return back()->with('failed', 'Request tidak diterima.');
+        }
 
         Presence::create([
             "attendance_id" => $attendance->id,
@@ -277,7 +291,4 @@ public function permissions(Attendance $attendance)
         return back()
             ->with('success', "Berhasil menerima data izin karyawan atas nama \"$user->name\".");
     }
-
-    
-
 }

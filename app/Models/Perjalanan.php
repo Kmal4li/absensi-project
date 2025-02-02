@@ -32,7 +32,12 @@ class Perjalanan extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('perjalanan') // Nama koleksi
-            ->useFallbackUrl('/path/to/fallback/image.jpg'); // Ganti dengan URL fallback yang sesuai
+        $this->addMediaCollection('perjalanan') 
+            ->useFallbackUrl('/path/to/fallback/image.jpg'); 
+    }
+
+    public function laporanKeuangan()
+    {
+        return $this->hasMany(PerjalananUserTransaksi::class, 'perjalanan_id');
     }
 }

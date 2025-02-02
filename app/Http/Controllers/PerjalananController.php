@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Perjalanan;
+use App\Models\PerjalananUserTransaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -10,8 +11,10 @@ class PerjalananController extends Controller
 {
     public function index()
     {
+        $perjalananUserTransaksi = PerjalananUserTransaksi::all();
         $perjalanans = Perjalanan::where('id', auth()->user()->id)->paginate(10);
-        return view('perjalanan.index', compact('perjalanans'));
+        return view('perjalanan.index', compact('perjalanans', 'perjalananUserTransaksi'));
+        
     }
 
     public function uploadLaporan($id)
@@ -21,26 +24,41 @@ class PerjalananController extends Controller
     }
 
     public function storeLaporan(Request $request, $id)
-    {
-        $validatedData = $request->validate([
-            'laporan_keuangan' => 'required|file|mimes:pdf|max:20480',
-        ]);
+{
+    $validatedData = $request->validate([
+        'nama_transaksi' => 'required|string|max:255',
+        'jumlah_nominal' => 'required|numeric',
+        'deskripsi' => 'nullable|string',
+        'bukti_transaksi' => 'required|file|mimes:jpeg,png,jpg,pdf|max:2048',
+    ]);
 
-        $perjalanan = Perjalanan::findOrFail($id);
-        $fileName = 'laporan_keuangan_' . auth()->user()->id . '_' . time() . '.' . $request->file('laporan_keuangan')->getClientOriginalExtension();
-        $filePath = $request->file('laporan_keuangan')->storeAs('laporan_keuangan/' . $id, $fileName, 'public');
+    $fileName = $request->file('bukti_transaksi')->store('bukti_transaksi', 'public');
 
-        $perjalanan->laporan_keuangan = $filePath;
-        $perjalanan->save();
+    PerjalananUserTransaksi::create([
+        'id' => $id,
+        'nama_transaksi' => $validatedData['nama_transaksi'],
+        'jumlah_nominal' => $validatedData['jumlah_nominal'],
+        'deskripsi' => $validatedData['deskripsi'],
+        'bukti_transaksi' => $fileName,
+    ]);
 
-        return redirect()->route('perjalanan.show', $id)->with('success', 'Laporan berhasil diupload!');
-    }
+    return redirect()->route('perjalanan.show', $id)->with('success', 'Laporan keuangan berhasil ditambahkan.');
+}
 
-    public function show($id)
-    {
-        $perjalanan = Perjalanan::findOrFail($id);
-        return view('perjalanan.show', compact('perjalanan'));
-    }
+
+public function show($id)
+{
+    $perjalanan = Perjalanan::findOrFail($id);
+    $perjalananUserTransaksi = PerjalananUserTransaksi::where('id', $id)->get(); 
+
+    return view('perjalanan.show', [
+        'perjalanan' => $perjalanan,
+        'perjalananUserTransaksi' => $perjalananUserTransaksi, 
+    ]);
+}
+
+
+
 
     public function create()
     {

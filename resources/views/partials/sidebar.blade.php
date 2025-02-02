@@ -39,12 +39,12 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('presences.*') ? 'active' : '' }}"
-                    href="{{ route('presences.index') }}">
-                    <span data-feather="clipboard" class="align-text-bottom"></span>
-                    Data Kehadiran
-                </a>
-            </li>
+    <a class="nav-link {{ request()->routeIs('presences.*') ? 'active' : '' }}"
+        href="{{ route('presences.index') }}">
+        <span data-feather="clipboard" class="align-text-bottom"></span>
+        Data Kehadiran
+    </a>
+</li>
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('perjalanan.*') ? 'active' : '' }}"
                     href="{{ route('perjalanan.index') }}">

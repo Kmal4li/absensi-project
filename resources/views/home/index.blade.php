@@ -87,14 +87,10 @@
     <p class="text-muted">&copy; 2024 Siswa SMKN 13 Bandung. All rights reserved.</p>
 </div>
 <script>
-    // Mengecek apakah geolocation tersedia di browser
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function(position) {
-            // Ambil latitude dan longitude
             var latitude = position.coords.latitude;
             var longitude = position.coords.longitude;
-
-            // Tampilkan data lokasi di elemen dengan ID 'geo-location'
             document.getElementById('geo-location').innerHTML = 
                 'Latitude: ' + latitude + ', Longitude: ' + longitude;
         }, function(error) {

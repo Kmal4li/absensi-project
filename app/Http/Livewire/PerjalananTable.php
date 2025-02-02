@@ -14,7 +14,6 @@ final class PerjalananTable extends PowerGridComponent
 {
     use ActionButton;
 
-    // Table sort field
     public string $sortField = 'perjalanans.created_at';
     public string $sortDirection = 'desc';
 
@@ -170,11 +169,6 @@ final class PerjalananTable extends PowerGridComponent
                 ->class('badge text-bg-success')
                 ->target('')
                 ->route('perjalanan.edit', ['id' => 'id']),
-
-            Button::make('download', 'Download Laporan')
-                ->class('badge text-bg-success')
-                ->target('_blank')
-                ->route('perjalanan.downloadLaporan', ['id' => 'id'])
         ];
     }
 

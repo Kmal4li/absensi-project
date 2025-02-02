@@ -9,18 +9,32 @@ class Presence extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'attendance_id',
+        'user_id',
+        'presence_date',
+        'presence_enter_time',
+        'presence_out_time',
+        'photo',
+        'is_permission'
+    ];
 
-    // Definisi relasi dengan User (satu ke banyak)
-    public function users()
+    protected $appends = ['photo_url']; 
+
+public function getPhotoUrlAttribute()
+{
+    return $this->photoData ? asset('storage/photos/' . $this->photoData) : null;
+}
+
+    // Relasi ke Attendance
+    public function attendance()
     {
-        return $this->hasMany(User::class, 'id', 'user_id'); // Asumsikan 'user_id' adalah foreign key di tabel presences
+        return $this->belongsTo(Attendance::class, 'attendance_id');
     }
 
-    // Jika Anda hanya ingin mendapatkan satu pengguna yang hadir, gunakan relasi belongsTo
+    // Relasi ke User
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 }
-
