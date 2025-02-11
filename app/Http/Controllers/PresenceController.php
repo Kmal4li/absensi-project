@@ -12,6 +12,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\AttendanceExport;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PresenceController extends Controller
 {
@@ -32,11 +33,11 @@ class PresenceController extends Controller
 
     $query = Attendance::query();
 
-    // Terapkan filter tanggal jika ada
+    
     $query = $this->applyDateFilter($query, $fromDate, $toDate);
 
     $attendances = $query->get()->sortByDesc(function ($attendance) {
-        // Gabungkan kedua logika sortir menjadi satu
+        
         return ($attendance->data->is_end ?? 0) + ($attendance->data->is_start ?? 0);
     });
 
@@ -54,37 +55,60 @@ class PresenceController extends Controller
         $photoUrl = Storage::url('attendance_photos/' . $attendance->photo);
 
         $data = [
-            // Tambahkan data yang diperlukan di sini
+            
         ];
 
         return view('presences.show', [
             "title" => "Data Detail Kehadiran",
             "attendance" => $attendance,
-            "photoUrl" => $photoUrl,
+            "photo" => $photoUrl,
             "data" => $data,
         ]);
     }
 
-public function savePhoto(Request $request)
-{
-    $request->validate([
-        'photo' => 'required|string',
-    ]);
+    public function savePhoto(Request $request)
+    {
+        $request->validate([
+            'photo' => 'required|string',
+        ]);
 
-    $photoData = $request->input('photo');
-    $photoData = str_replace('data:image/png;base64,', '', $photoData);
-    $photoData = str_replace(' ', '+', $photoData);
-    $imageName = 'photo_' . time() . '.png';
+        try {
+            $photoData = $request->input('photo');
 
-    
-    \Storage::disk('public')->put('storage/photos/' . $imageName, base64_decode($photoData));
+            if (!preg_match('/^data:image\/(png|jpeg|jpg);base64,/', $photoData)) {
+                throw new \Exception('Format foto tidak valid');
+            }
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Foto berhasil disimpan.',
-        'path' => 'storage/photos/' . $imageName, 
-    ]);
-}
+            
+            preg_match('/^data:image\/(\w+);base64,/', $photoData, $matches);
+            $extension = $matches[1] ?? 'png';
+            
+            $photoData = preg_replace('/^data:image\/\w+;base64,/', '', $photoData);
+            $photoData = str_replace(' ', '+', $photoData);
+            $decodedData = base64_decode($photoData);
+
+            if ($decodedData === false || strlen($decodedData) < 100) {
+                throw new \Exception('Gagal mendecode data base64');
+            }
+
+            $imageName = 'photo_'.time().'_'.Str::random(8).'.'.$extension;
+            $path = 'photos/'. $imageName;
+            Storage::disk('public')->put($path, $decodedData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Foto berhasil disimpan.',
+                'path' => $path, 
+                'url' => asset('storage/photos'.$path), 
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: '.$e->getMessage(),
+            ], 500);
+        }
+    }
 
 
     public function export($id)

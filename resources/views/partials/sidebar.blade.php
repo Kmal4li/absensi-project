@@ -52,6 +52,14 @@
                     Perjalanan Dinas
                 </a>
             </li>
+
+        <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('todo.*') ? 'active' : '' }}"
+                    href="{{ route('todo.index') }}">
+                    <span data-feather="clipboard" class="align-text-bottom"></span>
+                    Todo List
+                </a>
+            </li>
             @endif
         </ul>
 

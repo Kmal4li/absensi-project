@@ -9,7 +9,6 @@ class AttendanceCreateForm extends AttendanceAbstract
 {
     public function save()
     {
-        // filter value before validate
         $this->position_ids = array_filter($this->position_ids, function ($id) {
             return is_numeric($id);
         });

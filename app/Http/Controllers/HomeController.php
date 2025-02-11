@@ -7,6 +7,7 @@ use App\Models\Perjalanan;
 use App\Models\Holiday;
 use App\Models\Permission;
 use App\Models\Presence;
+use App\Models\Todo;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 
@@ -22,11 +23,13 @@ class HomeController extends Controller
             ->sortByDesc('data.is_start');
 
         $perjalanans = $user->perjalanans;
+        $todos = Todo::all();
 
         return view('home.index', [
             "title" => "Beranda",
             "attendances" => $attendances,
             "perjalanans" => $perjalanans,
+            "todos" => $todos
         ]);
     }
 

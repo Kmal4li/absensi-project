@@ -21,18 +21,18 @@ class Presence extends Model
 
     protected $appends = ['photo_url']; 
 
-public function getPhotoUrlAttribute()
-{
-    return $this->photoData ? asset('storage/photos/' . $this->photoData) : null;
-}
+    
 
-    // Relasi ke Attendance
+    public function getPhotoUrlAttribute()
+    {
+        return $this->photo ? asset('storage/photos/' . $this->photo) : null;
+    }
+    
     public function attendance()
     {
         return $this->belongsTo(Attendance::class, 'attendance_id');
     }
 
-    // Relasi ke User
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

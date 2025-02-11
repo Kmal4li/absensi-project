@@ -11,6 +11,7 @@ use App\Http\Controllers\PresenceController;
 use App\Http\Controllers\PerjalananController;
 use App\Http\Controllers\PerjalananUserTransaksiController;
 use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\TodoController;
 use App\Exports\PresencesExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Presence; 
@@ -102,8 +103,16 @@ Route::get('/perjalanan/{id}', [PerjalananController::class, 'show'])->name('per
 Route::get('/perjalanan/{id}/download', [PerjalananController::class, 'downloadPerjalanan'])->name('perjalanan.downloadPerjalanan');
 Route::get('perjalanan/{id}/download-laporan', [PerjalananController::class, 'downloadLaporan'])->name('perjalanan.downloadLaporan');
 Route::get('/perjalanan/{id}/upload-laporan', [PerjalananController::class, 'uploadLaporan'])->name('perjalanan.uploadLaporan');
-Route::post('/perjalanan/{id}/store-laporan', [PerjalananController::class, 'storeLaporan'])->name('perjalanan.storeLaporan');
 Route::post('/perjalanan/{id}/store-laporan', [PerjalananUserTransaksiController::class, 'store'])->name('laporan-keuangan.store');
 
 //kamera
-Route::post('/save-photo', [PresenceController::class, 'savePhoto'])->name('save-photo');
+Route::post('/presence/Savedphoto', [PresenceController::class, 'savePhoto']);
+
+//todo
+Route::get('/todo', [TodoController::class, 'index'])->name('todo.index');
+Route::resource('/todo', TodoController::class)->only(['index', 'create']); 
+Route::post('/todo', [TodoController::class, 'store'])->name('todo.store'); 
+Route::get('/todo/{id}/edit', [TodoController::class, 'edit'])->name('todo.edit'); 
+Route::put('/todo/{id}', [TodoController::class, 'update'])->name('todo.update'); 
+Route::get('/todo/{id}', [TodoController::class, 'show'])->name('todo.show');
+Route::put('/todos/{id}/selesai', [TodoController::class, 'markAsDone'])->name('todo.selesai');

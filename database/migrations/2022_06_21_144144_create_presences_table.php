@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('presence_date');
             $table->time('presence_enter_time');
             $table->time('presence_out_time')->nullable();
-            $table->string('photo')->nullable()->after('is_permission');
+            $table->string('photo')->nullable();
             $table->boolean('is_permission')->default(false);
             $table->timestamps();
         });

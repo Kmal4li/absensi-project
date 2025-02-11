@@ -58,7 +58,7 @@
         </div>
 
         <div class="col-md-8">
-    <div class="card shadow-sm mb-2">
+        <div class="card shadow-sm mb-2">
         <div class="card-header">
             Data Perjalanan Dinas
         </div>
@@ -79,6 +79,45 @@
                 <p class="text-muted">Tidak ada data perjalanan dinas.</p>
             @endif
         </div>
+    </div>
+
+    <div class="col-md-12">
+    <div class="card shadow-sm mb-2">
+        <div class="card-header">
+            Data To Do List
+        </div>
+        <div class="card-body">
+            @if ($todos->isEmpty())
+                <p class="text-muted">Tidak ada data To Do List.</p>
+            @else
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Kegiatan</th>
+                            <th>Deskripsi</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($todos as $index => $todo)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $todo->nama_kegiatan }}</td>
+                            <td>{{ $todo->deskripsi_kegiatan }}</td>
+                            <td>
+                                <a href="{{ route('todo.show', $todo->id) }}" class="btn btn-info btn-sm">Lihat</a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+    </div>
+</div>
+
+
     </div>
 </div>
     </div>

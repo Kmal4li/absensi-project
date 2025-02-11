@@ -31,7 +31,7 @@
     <button id="capture-btn" class="btn btn-primary mt-2">Ambil Foto</button>
     <canvas id="canvas" style="display: none;"></canvas>
     <img id="captured-image" class="w-100 mt-2 d-none">
-    <button id="save-photo-btn" class="btn btn-success mt-2">Simpan Foto</button>
+    <button id="savePhoto-btn" class="btn btn-success mt-2">Simpan Foto</button>
             </div>
 
         </div>
@@ -96,7 +96,7 @@
     document.addEventListener("DOMContentLoaded", function () {
     const video = document.getElementById("video");
     const captureBtn = document.getElementById("capture-btn");
-    const savePhotoBtn = document.getElementById("save-photo-btn");
+    const savePhotoBtn = document.getElementById("savePhoto-btn");
     const canvas = document.getElementById("canvas");
     const capturedImage = document.getElementById("captured-image");
     let capturedImageData = null;
@@ -117,8 +117,7 @@
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        capturedImageData = canvas.toDataURL("image/png");
-
+        capturedImageData = canvas.toDataURL("image/jpg");
         capturedImage.src = capturedImageData;
         capturedImage.classList.remove("d-none");
     });
@@ -126,7 +125,7 @@
   
     savePhotoBtn.addEventListener("click", function () {
         if (capturedImageData) {
-            fetch("/save-photo", {
+            fetch("/savePhoto", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

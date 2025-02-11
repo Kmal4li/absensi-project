@@ -16,7 +16,8 @@ final class PresenceTable extends PowerGridComponent
     public $attendanceId;
     public string $sortField = 'presences.created_at';
     public string $sortDirection = 'desc';
-    protected $listeners = ['photoSaved' => '$refresh'];
+    protected $listeners = ['savePhoto' => '$refresh'];
+    
 
     /*
     |---------------------------------------------------------------------------
@@ -73,26 +74,28 @@ final class PresenceTable extends PowerGridComponent
     |
     */
     public function addColumns(): PowerGridEloquent
-{
-    return PowerGrid::eloquent()
-        ->addColumn('id')
-        ->addColumn('user_name')
-        ->addColumn("presence_date")
-        ->addColumn("presence_enter_time")
-        ->addColumn("presence_out_time", fn (Presence $model) => $model->presence_out_time ?? '<span class="badge text-bg-danger">Belum Absensi Pulang</span>')
-        ->addColumn("is_permission", fn (Presence $model) => $model->is_permission ? 
-            '<span class="badge text-bg-warning">Izin</span>' : '<span class="badge text-bg-success">Hadir</span>')
-            ->addColumn('photo', function (Presence $model) {
-                if ($model->photoData) {
-                    $url = asset('storage/photos/' . $photoData->photoData);
-                    return '<a href="' . $url . '" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-eye">Lihat Foto</i></a>';
-                } else {
-                    return '<span class="text-muted">Tidak Ada Foto</span>';
-                }
-            })
-        ->addColumn('created_at')
-        ->addColumn('created_at_formatted', fn (Presence $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
-}
+    {
+        return PowerGrid::eloquent()
+            ->addColumn('id')
+            ->addColumn('user_name')
+            ->addColumn("presence_date")
+            ->addColumn("presence_enter_time")
+            ->addColumn("presence_out_time", fn (Presence $model) => $model->presence_out_time ?? '<span class="badge text-bg-danger">Belum Absensi Pulang</span>')
+            ->addColumn("is_permission", fn (Presence $model) => $model->is_permission ? 
+                        '<span class="badge text-bg-warning">Izin</span>' : '<span class="badge text-bg-success">Hadir</span>')
+            ->addColumn('photo', function (Presence $presence) {
+                            if ($presence->photos) {
+                                $photoUrl = asset('storage/photos/' . $presence->photos->imageName);
+                                return view('livewire.presence-table'. $photoUrl, compact('photoUrl'));
+                            } else {
+                                return ('Foto tidak ditemukan');
+                            }
+                        }
+                    )
+            ->addColumn('created_at')
+            ->addColumn('created_at_formatted', fn (Presence $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+    }
+
     public function columns(): array
     {
         return [
@@ -124,7 +127,6 @@ final class PresenceTable extends PowerGridComponent
                 ->sortable(),
 
             Column::make('Foto', 'photo')
-                ->searchable()
                 ->sortable(),
 
             Column::make('Created at', 'created_at')
