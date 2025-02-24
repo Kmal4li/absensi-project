@@ -8,6 +8,7 @@
         "src": "app/public/storage",
         "dest": "/public/index.php"
     }],
+    "buildCommand": "npm install && npm run build",
     "env": {
         "APP_ENV": "production",
         "APP_DEBUG": "true",
