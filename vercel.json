@@ -1,24 +1,20 @@
 {
     "version": 2,
-    "framework": null,
     "functions": {
         "api/index.php": { "runtime": "vercel-php@0.6.0" }
     },
     "routes": [
-        { "src": "/build/(.*)", "dest": "/public/build/" },
         { "src": "/(.*)", "dest": "/api/index.php" }
     ],
-    "public": true,
-    "buildCommand": "npm build",
-    "outputDirectory": "public",
+    "buildCommand": "composer install --no-dev --ignore-platform-reqs && php artisan config:cache && php artisan route:cache",
     "env": {
         "APP_NAME": "Laravel",
         "APP_ENV": "production",
-        "APP_DEBUG": "true",
-        "APP_URL": "http://localhost:8000",
+        "APP_DEBUG": "false",
+        "APP_URL": "",
         "APP_KEY": "base64:FPIIVCHLdp2PSFT2hCWE7JIz0zNnZRzEAWKeHKIyl4o=",
         "VIEW_COMPILED_PATH": "/tmp",
-        "CACHE_DRIVER": "array",
+        "CACHE_DRIVER": "file",
         "LOG_CHANNEL": "stack",
         "SESSION_DRIVER": "file",
         "DB_CONNECTION": "mysql",
