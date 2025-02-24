@@ -1,10 +1,4 @@
-FROM php:8.2
-
-WORKDIR /app
-
-COPY . .
-
-# Install dependencies
+FROM php:8.1-fpm
 RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev \
@@ -16,7 +10,8 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install zip pdo pdo_mysql mbstring gd exif sodium \
     && docker-php-ext-enable pdo_mysql sodium zip gd exif
 
+
 # Install dependensi Laravel
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install 
 
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
