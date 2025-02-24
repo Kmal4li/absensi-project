@@ -1,27 +1,27 @@
 {
     "version": 2,
+      "framework": null,
     "functions": {
-        "api/index.php": { "runtime": "vercel-php@0.6.0" }
+        "api/index.php": { "runtime": "vercel-php@0.7.3" }
     },
-    "routes": [
-        { "src": "/(.*)", "dest": "/api/index.php" }
-    ],
-    "buildCommand": "composer install --no-dev --ignore-platform-reqs && php artisan config:cache && php artisan route:cache",
+    "routes": [{
+        "src": "app/public/storage",
+        "dest": "/api/index.php"
+    }],
     "env": {
-        "APP_NAME": "Laravel",
         "APP_ENV": "production",
-        "APP_DEBUG": "false",
+        "APP_DEBUG": "true",
         "APP_URL": "",
-        "APP_KEY": "base64:FPIIVCHLdp2PSFT2hCWE7JIz0zNnZRzEAWKeHKIyl4o=",
+
+        "APP_CONFIG_CACHE": "/tmp/config.php",
+        "APP_EVENTS_CACHE": "/tmp/events.php",
+        "APP_PACKAGES_CACHE": "/tmp/packages.php",
+        "APP_ROUTES_CACHE": "/tmp/routes.php",
+        "APP_SERVICES_CACHE": "/tmp/services.php",
         "VIEW_COMPILED_PATH": "/tmp",
-        "CACHE_DRIVER": "file",
-        "LOG_CHANNEL": "stack",
-        "SESSION_DRIVER": "file",
-        "DB_CONNECTION": "mysql",
-        "DB_HOST": "127.0.0.1",
-        "DB_PORT": "3306",
-        "DB_DATABASE": "absensi_app",
-        "DB_USERNAME": "root",
-        "DB_PASSWORD": ""
+
+        "CACHE_DRIVER": "array",
+        "LOG_CHANNEL": "stderr",
+        "SESSION_DRIVER": "cookie"
     }
 }
