@@ -13,7 +13,7 @@
     "outputDirectory": "public",
     "env": {
         "APP_NAME": "Laravel",
-        "APP_ENV": "local",
+        "APP_ENV": "production",
         "APP_DEBUG": "true",
         "APP_URL": "http://localhost:8000",
         "APP_KEY": "base64:FPIIVCHLdp2PSFT2hCWE7JIz0zNnZRzEAWKeHKIyl4o=",
