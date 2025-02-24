@@ -1,34 +1,10 @@
-# Gunakan image PHP dengan ekstensi yang dibutuhkan
-FROM php:8.1-fpm
-
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    zip \
-    unzip \
-    git \
-    curl \
-    && docker-php-ext-install pdo pdo_mysql gd
-
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Set working directory
-WORKDIR /var/www
-
-# Copy semua file ke dalam container
-COPY . .
-
-# Install dependencies Laravel
+FROM php:8.2
+RUN apt-get update -y && apt-get install -y openssl zip unzip git
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN docker-php-ext-install pdo mbstring
+WORKDIR /app
+COPY . /app
 RUN composer install
 
-# Beri permission ke storage dan bootstrap/cache
-RUN chmod -R 777 storage bootstrap/cache
-
-# Expose port 9000
+CMD php artisan serve --host=0.0.0.0 --port=8181
 EXPOSE 9000
-
-# Jalankan PHP-FPM
-CMD ["php-fpm"]
