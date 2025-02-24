@@ -22,7 +22,7 @@ WORKDIR /var/www
 COPY . .
 
 # Install dependencies Laravel
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install
 
 # Beri permission ke storage dan bootstrap/cache
 RUN chmod -R 777 storage bootstrap/cache
