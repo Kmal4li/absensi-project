@@ -12,7 +12,8 @@ return new class extends Migration
      * @return void
      */
     public function up()
-    {
+{
+    if (!Schema::hasTable('holidays')) {
         Schema::create('holidays', function (Blueprint $table) {
             $table->id();
             $table->string('title');
@@ -21,6 +22,8 @@ return new class extends Migration
             $table->timestamps();
         });
     }
+}
+
 
     /**
      * Reverse the migrations.

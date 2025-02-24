@@ -12,11 +12,14 @@ return new class extends Migration
      * @return void
      */
     public function up()
-    {
-        Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('role_id')->after('password')->constrained();
-        });
-    }
+{
+    Schema::table('users', function (Blueprint $table) {
+        if (!Schema::hasColumn('users', 'role_id')) {
+            $table->unsignedBigInteger('role_id')->after('password');
+        }
+    });
+}
+
 
     /**
      * Reverse the migrations.
@@ -24,10 +27,12 @@ return new class extends Migration
      * @return void
      */
     public function down()
-    {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['role_id']);
+{
+    Schema::table('users', function (Blueprint $table) {
+        if (Schema::hasColumn('users', 'role_id')) {
             $table->dropColumn('role_id');
-        });
-    }
+        }
+    });
+}
+
 };

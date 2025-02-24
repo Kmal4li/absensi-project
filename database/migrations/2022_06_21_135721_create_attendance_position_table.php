@@ -12,14 +12,17 @@ return new class extends Migration
      * @return void
      */
     public function up()
-    {
+{
+    if (!Schema::hasTable('attendance_position')) {
         Schema::create('attendance_position', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('attendance_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('position_id')->constrained();
+            $table->unsignedBigInteger('attendance_id');
+            $table->unsignedBigInteger('position_id');
             $table->timestamps();
         });
     }
+}
+
 
     /**
      * Reverse the migrations.

@@ -12,14 +12,17 @@ return new class extends Migration
      * @return void
      */
     public function up()
-    {
-        Schema::table('users', function (Blueprint $table) {
-            $table->after('password', function (Blueprint $table) {
-                $table->string('phone')->unique()->nullable();
-                $table->foreignId('position_id')->constrained();
-            });
-        });
-    }
+{
+    Schema::table('users', function (Blueprint $table) {
+        if (!Schema::hasColumn('users', 'phone')) {
+            $table->string('phone')->nullable()->after('password');
+        }
+        if (!Schema::hasColumn('users', 'position_id')) {
+            $table->unsignedBigInteger('position_id')->after('phone');
+        }
+    });
+}
+
 
     /**
      * Reverse the migrations.
@@ -27,10 +30,15 @@ return new class extends Migration
      * @return void
      */
     public function down()
-    {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['position_id']);
-            $table->dropColumn(['phone', 'position_id']);
-        });
-    }
+{
+    Schema::table('users', function (Blueprint $table) {
+        if (Schema::hasColumn('users', 'phone')) {
+            $table->dropColumn('phone');
+        }
+        if (Schema::hasColumn('users', 'position_id')) {
+            $table->dropColumn('position_id');
+        }
+    });
+}
+
 };
