@@ -83,15 +83,11 @@ final class PresenceTable extends PowerGridComponent
             ->addColumn("presence_out_time", fn (Presence $model) => $model->presence_out_time ?? '<span class="badge text-bg-danger">Belum Absensi Pulang</span>')
             ->addColumn("is_permission", fn (Presence $model) => $model->is_permission ? 
                         '<span class="badge text-bg-warning">Izin</span>' : '<span class="badge text-bg-success">Hadir</span>')
-            ->addColumn('photo', function (Presence $presence) {
-                            if ($presence->photos) {
-                                $photoUrl = asset('storage/photos/' . $presence->photos->imageName);
-                                return view('livewire.presence-table'. $photoUrl, compact('photoUrl'));
-                            } else {
-                                return ('Foto tidak ditemukan');
-                            }
-                        }
-                    )
+                        ->addColumn('photo', fn (Presence $model) => 
+            !empty($model->photo) && file_exists(storage_path("app/public/photos/{$model->photo}")) 
+            ? '<span class="badge text-bg-success">Sudah mengambil foto</span>' 
+            : '<span class="badge text-bg-danger">Belum mengambil foto</span>'
+        )
             ->addColumn('created_at')
             ->addColumn('created_at_formatted', fn (Presence $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
     }
