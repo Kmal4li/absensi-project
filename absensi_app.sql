@@ -279,6 +279,62 @@ insert  into `users`(`id`,`name`,`email`,`email_verified_at`,`password`,`phone`,
 (13,'kamal','kamal@gmail.com',NULL,'$2y$10$uCYetnT1/T1MkTin6d.1DuWLdiA/osExe4hz4x2LLPmIvDHFJOIMq','081273178',1,3,NULL,'2024-10-07 10:56:50','2024-10-07 10:56:50'),
 (14,'Akmal','akmal@gmail.com',NULL,'$2y$10$IZ/e7mIohzSfYgIMjQZqA.2Y36PlA8mq.0JEza6XKUy502XNN5Dfm','0812345678',2,1,NULL,'2024-10-07 11:21:08','2024-10-07 11:21:08');
 
+/*perjalanans*/
+
+CREATE TABLE `perjalanans` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `tanggal` date NOT NULL,
+  `jam_mulai` time NOT NULL,
+  `jam_selesai` time DEFAULT NULL,
+  `lokasi_awal` varchar(255) NOT NULL,
+  `lokasi_tujuan` varchar(255) NOT NULL,
+  `keperluan` text NOT NULL,
+  `status` enum('pending','disetujui','ditolak') DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `perjalanans_user_id_foreign` (`user_id`),
+  CONSTRAINT `perjalanans_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*perjalanan_users*/
+
+CREATE TABLE perjalanan_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    perjalanan_id INT NOT NULL,
+    user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (perjalanan_id) REFERENCES perjalanans(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+/*perjalanan_user_transaksis*/
+
+CREATE TABLE perjalanan_user_transaksis (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    perjalanan_user_id INT NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (perjalanan_user_id) REFERENCES perjalanan_users(id) ON DELETE CASCADE
+);
+
+/*todos*/
+
+CREATE TABLE todos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    status ENUM('pending', 'in_progress', 'completed') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
