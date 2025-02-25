@@ -1,7 +1,0 @@
-{
-    "build": {
-      "base": "php:8.2.12",
-      "builder": "DOCKERFILE"
-    }
-  }
-  
