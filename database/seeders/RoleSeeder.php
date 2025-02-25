@@ -23,7 +23,7 @@ class RoleSeeder extends Seeder
             'name' => 'operator',
         ]);
         Role::create([
-            'name' => 'user', //karyawan biasa
+            'name' => 'Karyawan "Biasa"', 
         ]);
     }
 }
