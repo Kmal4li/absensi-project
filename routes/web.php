@@ -106,7 +106,7 @@ Route::get('/perjalanan/{id}/upload-laporan', [PerjalananController::class, 'upl
 Route::post('/perjalanan/{id}/store-laporan', [PerjalananUserTransaksiController::class, 'store'])->name('laporan-keuangan.store');
 
 //kamera
-Route::post('/presence/Savedphoto', [PresenceController::class, 'savePhoto']);
+Route::post('/save-photo', [PresenceController::class, 'savePhoto'])->name('save_photo');
 
 //todo
 Route::get('/todo', [TodoController::class, 'index'])->name('todo.index');

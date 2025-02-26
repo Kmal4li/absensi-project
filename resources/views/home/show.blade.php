@@ -26,13 +26,16 @@
             @else
             @include('home.partials.qrcode-presence')
             @endif
+
+            <!-- Container Kamera -->
             <div class="camera-container">
-    <video id="video" autoplay class="w-100"></video>
-    <button id="capture-btn" class="btn btn-primary mt-2">Ambil Foto</button>
-    <canvas id="canvas" style="display: none;"></canvas>
-    <img id="captured-image" class="w-100 mt-2 d-none">
-    <button id="savePhoto-btn" class="btn btn-success mt-2">Simpan Foto</button>
-            </div>
+    <div id="my_camera" class="border p-2"></div>
+    <button onclick="take_snapshot()" class="btn btn-primary mt-2">Ambil Foto</button>
+    <div id="my_result" class="mt-2"></div>
+    <input type="hidden" id="captured_image">
+    <button onclick="savePhoto()" class="btn btn-success mt-2">Simpan Foto</button>
+</div>
+<!-- End Container Kamera -->
 
         </div>
         <div class="col-md-6">
@@ -92,72 +95,57 @@
 @endsection
 
 @push('script')
+<!-- Load Webcam.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-    const video = document.getElementById("video");
-    const captureBtn = document.getElementById("capture-btn");
-    const savePhotoBtn = document.getElementById("savePhoto-btn");
-    const canvas = document.getElementById("canvas");
-    const capturedImage = document.getElementById("captured-image");
-    let capturedImageData = null;
-
-
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => {
-            video.srcObject = stream;
-        })
-        .catch(err => {
-            console.error("Gagal mengakses kamera:", err);
-            alert("Gagal mengakses kamera. Pastikan Anda mengizinkan akses kamera.");
-        });
-
-
-    captureBtn.addEventListener("click", function () {
-        const context = canvas.getContext("2d");
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        capturedImageData = canvas.toDataURL("image/jpg");
-        capturedImage.src = capturedImageData;
-        capturedImage.classList.remove("d-none");
+    // Menyiapkan Kamera
+    Webcam.set({
+        width: 320,
+        height: 240,
+        image_format: 'jpeg',
+        jpeg_quality: 90
     });
 
-  
-    savePhotoBtn.addEventListener("click", function () {
-        if (capturedImageData) {
-            fetch("/savePhoto", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({ photo: capturedImageData })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Gagal mengunggah foto.");
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    console.log("Foto berhasil disimpan:", data);
-                    alert("Foto berhasil disimpan!");
-                    
-                    Livewire.emit('photoSaved');
-                } else {
-                    console.error("Gagal menyimpan foto:", data.message);
-                    alert(data.message || "Gagal menyimpan foto.");
-                }
-            })
-            .catch(error => {
-                console.error("Error mengunggah foto:", error);
-                alert("Gagal menyimpan foto. Cek console untuk detail.");
-            });
-        } else {
-            alert("Tidak ada foto yang diambil.");
-        }
+    // Pasang Kamera di Elemen dengan ID 'my_camera'
+    Webcam.attach('#my_camera');
+
+    // Fungsi untuk Mengambil Foto
+    function take_snapshot() {
+    Webcam.snap(function(data_uri) {
+        console.log(data_uri); // Cek apakah ada data gambar
+        document.getElementById('my_result').innerHTML = 
+            '<img src="'+data_uri+'" class="w-100 border shadow-sm"/>';
+        document.getElementById('captured_image').value = data_uri; // Simpan data
     });
-});
+}
+
+
+function savePhoto() {
+    let imageData = document.getElementById('captured_image').value;
+    if (!imageData) {
+        alert("Ambil foto terlebih dahulu!");
+        return;
+    }
+
+    fetch('{{ route("save_photo") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ image: imageData })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+    })
+    .catch(error => {
+        alert("Terjadi kesalahan saat menyimpan foto!");
+        console.error('Error:', error);
+    });
+}
+
+
 </script>
 @endpush
