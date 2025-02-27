@@ -7,7 +7,7 @@ use App\Models\Perjalanan;
 use App\Models\Holiday;
 use App\Models\Permission;
 use App\Models\Presence;
-use App\Models\Todo;
+use App\Models\todo;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 
